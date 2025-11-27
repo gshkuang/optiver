@@ -1,51 +1,34 @@
 # Optiver 项目说明
 
 ## 概览
-- 目标：基于 Kaggle Optiver Trading at the Close 任务，构建两套可运行的基线方案以预测收盘阶段的价格或方向变化。
+- 目标：基于 Kaggle Optiver Trading at the Close 任务，整理与注释两套公开基线方案，便于复现与学习。
 - 竞赛主页：`https://www.kaggle.com/competitions/optiver-trading-at-the-close`
-- 本仓库提供两份独立 Notebook，分别实现通用基线与分组时序增强方案。
+- 飞书文档：`https://dqpzque4vfe.feishu.cn/wiki/OlNPwx4uui6OflkB0D3c2iZOn2d`
 
-## 文件结构
-- `Optiver_Scheme1_Baseline.ipynb`：方案一，数值标准化 + 类别独热编码 + Ridge/LogisticRegression
-- `Optiver_Scheme2_GroupTime_RF.ipynb`：方案二，分组与时序特征工程 + RandomForest
-- `Optiver_Trading_At_Close_Notebook.ipynb`：合并版（保留以供参考）
-- `submission_scheme1.csv` / `submission_scheme2.csv`：推断输出（运行 Notebook 后生成，若存在 `test.csv`）
+## 文件说明
+- `baseline-lgb-xgb-and-catboost.ipynb`：三模型基线（LGB/XGB/CatBoost），含基础特征工程与竞赛环境推断。
+- `optiver-robust-best-single-model.ipynb`：Robust Best 单模型（LightGBM），含分组/时序特征工程、离线时序划分与在线推断。
 
-## 数据与依赖
-- 数据文件：将 `train.csv` 与（可选）`test.csv` 放置到项目根目录或 `./data/` 目录下
-- 依赖：`python3`、`pandas`、`numpy`、`scikit-learn`
+## 代码出处
+- `baseline-lgb-xgb-and-catboost.ipynb` 来源：`https://www.kaggle.com/code/yuanzhezhou/baseline-lgb-xgb-and-catboost`
+- `optiver-robust-best-single-model.ipynb` 来源：`https://www.kaggle.com/code/lblhandsome/optiver-robust-best-single-model`
 
-## 快速开始
-1. 准备数据：将 `train.csv` 和（可选）`test.csv` 放入根目录或 `./data/`
-2. 运行方案一：打开并依次执行 `Optiver_Scheme1_Baseline.ipynb`
-3. 运行方案二：打开并依次执行 `Optiver_Scheme2_GroupTime_RF.ipynb`
-4. 若存在 `test.csv`，Notebook 将在最后生成 `submission_scheme1.csv` 或 `submission_scheme2.csv`
+## 依据飞书文档的结构化说明
+- Optiver 介绍：作为全球领先做市商，强调以技术驱动的量化交易与流动性供给；竞赛聚焦收盘阶段（Closing Auction）的价格/方向预测。
+- 两个方案对应关系：
+  - 基线（LGB/XGB/CatBoost）：强调稳健与可复现，便于快速建立参考与做误差分析。
+  - 进阶（LightGBM 单模型）：通过更丰富的分组与时序特征提升表达能力，并严格使用时间顺序进行训练/验证以避免泄露。
+- 后续建议：在上述基线之上进一步探索 GBDT/Transformer、更细粒度时间窗特征与交易规则约束，以更贴近真实交易决策流程。
 
-## 方案说明
-- 方案一（通用基线）：
-  - 数值特征标准化、类别特征独热编码
-  - 回归任务使用 Ridge；分类任务使用 LogisticRegression
-  - 5 折交叉验证评估，逻辑清晰、可解释性强
-- 方案二（分组时序增强）：
-  - 按 `stock_id`、日期等分组构造统计与归一化特征（如组均值、相对值、日均值差）
-  - 使用随机森林进行非线性拟合，增强鲁棒性与表达能力
-  - 5 折交叉验证评估，适合复杂市场结构与横截面异质性
-
-## 飞书页面内容（整理版）
-- 来源链接：`https://dqpzque4vfe.feishu.cn/wiki/OlNPwx4uui6OflkB0D3c2iZOn2d`
-- Optiver 介绍：
-  - Optiver 是全球领先的做市商之一，专注于以技术驱动的量化交易，在收盘竞价等关键时刻提供流动性与价格发现。
-  - Trading at the Close 任务聚焦收盘阶段的价格或方向预测，强调在订单簿结构变化与流动性波动下的稳定建模。
-- 对应两个方案：
-  - 方案一侧重稳健与可解释，适合快速建立基线、定位问题与开展误差分析。
-  - 方案二通过分组与时序相关特征提升表达能力，适合更复杂的市场结构与横截面异质性场景。
-- 建议：
-  - 在上述基线之上可进一步引入 GBDT/Transformer、更细粒度时间窗特征与交易规则约束，以贴近真实决策流程。
+## 使用指南
+- 准备数据：从 Kaggle 获取比赛数据，按原 Notebook 的路径使用（Kaggle 环境以 `/kaggle/input/optiver-trading-at-the-close/` 为根）。本地使用时可自行调整数据路径。
+- 依赖：`python3`、`pandas`、`numpy`、`scikit-learn`，并根据 Notebook 安装 `lightgbm`、`xgboost`、`catboost`。
+- 运行：在对应 Notebook 中依次执行各单元。若使用比赛的交互环境（`optiver2023`），需在 Kaggle 上运行以加载官方评测接口。
 
 ## 注意事项
-- 本仓库未包含比赛原始数据，请自行从 Kaggle 或内部数据源获取并放置到指定路径。
-- 若你的数据列名不同（例如目标列、日期列等），Notebook 的自动检测会尝试兼容常见命名；如有偏差，请在 Notebook 中手动指定。
+- Notebook 已加入解释性 Markdown 注释，未改变核心实现逻辑。若需在本地运行，请根据实际环境调整数据路径与依赖。
+- 竞赛推断接口（`optiver2023`）为 Kaggle 专用，在本地环境不可直接使用。
 
 ## 参考
 - Kaggle 比赛页：`https://www.kaggle.com/competitions/optiver-trading-at-the-close`
-- Optiver 公司介绍：公开资料与行业报道
+- 飞书文档（项目背景与方案）：`https://dqpzque4vfe.feishu.cn/wiki/OlNPwx4uui6OflkB0D3c2iZOn2d`
